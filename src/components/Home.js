@@ -1,12 +1,14 @@
 import styled from 'styled-components'
 import ImgSlider from './ImgSlider'
 import Viewers from './Viewers'
+import Movies from './Movies'
 
 export default function Home() {
   return (
     <Container>
       <ImgSlider />
       <Viewers />
+      <Movies />
     </Container>
   )
 }
