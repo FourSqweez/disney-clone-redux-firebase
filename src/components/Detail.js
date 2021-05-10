@@ -2,10 +2,12 @@ import styled from 'styled-components'
 import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import db from '../firebase'
+import { useHistory } from 'react-router-dom'
 
 export default function Detail() {
 	const { id } = useParams()
 	const [movie, setMovie] = useState()
+	const history = useHistory()
 
 	useEffect(() => {
 		db.collection('movies')
@@ -15,7 +17,7 @@ export default function Detail() {
 				if (doc.exists) {
 					setMovie(doc.data())
 				} else {
-					// redirect to homepage
+					history.push('/')
 				}
 			})
 	}, [])
@@ -87,7 +89,6 @@ const ImageTitle = styled.div`
 	min-width: 200px;
 	margin-bottom: 70px;
 	padding-right: 60px;
-
 
 	img {
 		margin-top: 50px;
