@@ -1,47 +1,59 @@
 import styled from 'styled-components'
+import { useParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import db from '../firebase'
 
 export default function Detail() {
+	const { id } = useParams()
+	const [movie, setMovie] = useState()
+
+	useEffect(() => {
+		db.collection('movies')
+			.doc(id)
+			.get()
+			.then((doc) => {
+				if (doc.exists) {
+					setMovie(doc.data())
+				} else {
+					// redirect to homepage
+				}
+			})
+	}, [])
+	console.log('Movie is', movie)
 	return (
 		<Container>
-			<Background>
-				<img
-					src="https://images4.alphacoders.com/682/thumb-1920-682321.jpg"
-					alt=""
-				/>
-			</Background>
+			{movie && (
+				<>
+					<Background>
+						<img src={movie.backgroundImg} alt={movie.title} />
+					</Background>
 
-			<ImageTitle>
-				<img
-					src="https://i.pinimg.com/originals/31/2c/8a/312c8a698601f2bf1a8938ebca850496.png"
-					alt=""
-				/>
-			</ImageTitle>
+					<ImageTitle>
+						<img src={movie.titleImg} alt="" />
+					</ImageTitle>
 
-			<Controls>
-				<PlayButton>
-					<img src="/images/play-icon-black.png" alt="" />
-					<span>PLAY</span>
-				</PlayButton>
+					<Controls>
+						<PlayButton>
+							<img src="/images/play-icon-black.png" alt="" />
+							<span>PLAY</span>
+						</PlayButton>
 
-				<TrailerButton>
-					<img src="/images/play-icon-white.png" alt="" />
-					<span>Trailer</span>
-				</TrailerButton>
+						<TrailerButton>
+							<img src="/images/play-icon-white.png" alt="" />
+							<span>Trailer</span>
+						</TrailerButton>
 
-				<AddButton>
-					<span>+</span>
-				</AddButton>
-				<GroupWatchButton>
-					<img src="/images/group-icon.png" alt="" />
-				</GroupWatchButton>
-			</Controls>
-			<SubTitle>2018 · 7m · Romance, Fantasy, Action, Animation</SubTitle>
-			<Description>
-				Shido Itsuka, a seemingly ordinary high school boy comes across a
-				mysterious girl at the ground zero of a spacequake and learns from his
-				sister Kotori she is one of the "Spirits" who are the real cause of the
-				spacequakes that occur when they manifest themselves in the world.
-			</Description>
+						<AddButton>
+							<span>+</span>
+						</AddButton>
+						<GroupWatchButton>
+							<img src="/images/group-icon.png" alt="" />
+						</GroupWatchButton>
+					</Controls>
+					<SubTitle>{movie.subTitle}</SubTitle>
+					<Description>{movie.description}</Description>
+				</>
+			)}
 		</Container>
 	)
 }
@@ -73,10 +85,12 @@ const ImageTitle = styled.div`
 	width: 35vw;
 	min-height: 170px;
 	min-width: 200px;
-	margin-bottom: 60px;
+	margin-bottom: 70px;
+	padding-right: 60px;
+
 
 	img {
-		margin-top: 70px;
+		margin-top: 50px;
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
