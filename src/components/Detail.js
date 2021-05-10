@@ -73,8 +73,10 @@ const ImageTitle = styled.div`
 	width: 35vw;
 	min-height: 170px;
 	min-width: 200px;
+	margin-bottom: 60px;
 
 	img {
+		margin-top: 70px;
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
@@ -144,5 +146,7 @@ const Description = styled.div`
 	font-size: 20px;
 	margin-top: 16px;
 	color: rgb(249, 249, 249);
-	background: rgb(0, 0, 0, 0.3);
+	background: rgb(0, 0, 0, 0.2);
+	max-width: 760px;
+	text-indent: 50px;
 `
