@@ -1,7 +1,6 @@
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import {
-	selectUserName,
 	selectUserPhoto,
 	setSignOut,
 	setUserLogin,
@@ -10,24 +9,27 @@ import { useSelector } from 'react-redux'
 import { auth, provider } from '../firebase'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Header() {
-	const userName = useSelector(selectUserName)
 	const userPhoto = useSelector(selectUserPhoto)
 	const dispatch = useDispatch()
 	const history = useHistory()
+	const [authReady, setAuthReady] = useState(
+		JSON.parse(localStorage.getItem('user'))
+	)
+	const [isPending, setIsPending] = useState(true)
 
 	useEffect(() => {
 		auth.onAuthStateChanged(async (user) => {
+			setIsPending(false)
 			if (user) {
-				dispatch(
-					setUserLogin({
-						name: user.displayName,
-						email: user.email,
-						photo: user.photoURL,
-					})
-				)
+				let newUser = {
+					name: user.displayName,
+					email: user.email,
+					photo: user.photoURL,
+				}
+				dispatch(setUserLogin(newUser))
 				history.push('/')
 			}
 		})
@@ -35,14 +37,16 @@ export default function Header() {
 
 	const signIn = () => {
 		auth.signInWithPopup(provider).then((result) => {
+			setIsPending(false)
 			let user = result.user
-			dispatch(
-				setUserLogin({
-					name: user.displayName,
-					email: user.email,
-					photo: user.photoURL,
-				})
-			)
+			let newUser = {
+				name: user.displayName,
+				email: user.email,
+				photo: user.photoURL,
+			}
+			dispatch(setUserLogin(newUser))
+			localStorage.setItem('user', JSON.stringify(user))
+			setAuthReady(newUser)
 			history.push('/')
 		})
 	}
@@ -50,6 +54,8 @@ export default function Header() {
 	const signOut = () => {
 		auth.signOut().then(() => {
 			dispatch(setSignOut())
+			localStorage.removeItem('user')
+			setAuthReady(null)
 			history.push('/login')
 		})
 	}
@@ -57,10 +63,12 @@ export default function Header() {
 	return (
 		<Nav>
 			<Logo src="/images/logo.svg" />
-			{!userName ? (
+			{!authReady ? (
 				<LoginContainer>
 					<Login onClick={signIn}>Login</Login>
 				</LoginContainer>
+			) : isPending ? (
+				<div>...Loading</div>
 			) : (
 				<>
 					<NavMenu>
